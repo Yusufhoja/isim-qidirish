@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nationality Identifier</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+h1 {
+  text-align: center;
+}
+
+input, button {
+  padding: 10px;
+  font-size: 16px;
+  margin: 10px;
+}
+
+#results {
+  margin-top: 20px;
+}
+
+#country-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+#country-list li {
+  margin-bottom: 10px;
+}
+
+.country-item {
+  display: flex;
+  align-items: center;
+}
+
+.country-item img {
+  width: 30px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+button {
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+  <div>
+    <input type="text" id="name" placeholder="isim kiriting">
+    <button id="check-name">qidirish</button>
+  </div>
+
+  <div id="results">
+    <ul id="country-list">
+     
+    </ul>
+  </div>
+<script>
+    const button = document.getElementById('check-name');
+const nameInput = document.getElementById('name');
+const countryList = document.getElementById('country-list');
+const apiURL = "https://api.nationalize.io"; 
+
+async function fetchNationality(name) {
+  const response = await fetch(`${apiURL}?name=${name}`);
+  const data = await response.json();
+  return data;
+}
+
+
+function displayResults(data) {
+  countryList.innerHTML = ''; 
+
+  data.country.forEach(country => {
+    const countryItem = document.createElement('li');
+    countryItem.classList.add('country-item');
+
+    const flagURL = `https://flagcdn.com/16x12/${country.country_id.toLowerCase()}.png`; 
+
+    countryItem.innerHTML = `
+      <img src="${flagURL}" alt="${country.country_id} flag">
+      ${country.country_id} - Probability: ${(country.probability * 100).toFixed(2)}%
+    `;
+
+    countryList.appendChild(countryItem);
+  });
+}
+
+
+button.addEventListener('click', async () => {
+  const name = nameInput.value.trim();
+
+  if (name) {
+    const data = await fetchNationality(name);
+    displayResults(data);
+  } else {
+    alert('isim kiritishingiz kerak');
+  }
+});
+
+</script>
+  <script src="script.js"></script>
+</body>
+</html>
